@@ -6,7 +6,7 @@
 ![Coverage](https://img.shields.io/badge/Coverage-95.2%25-brightgreen)
 [![Go Report Card](https://goreportcard.com/badge/github.com/thediveo/nufftables)](https://goreportcard.com/report/github.com/thediveo/nufftables)
 
-The '`nufftables` go module is a thin wrapper around Google's
+The `nufftables` go module is a thin wrapper around Google's
 [`nftables`](https://github.com/google/nftables) to ease reasoning over the
 current state of tables, chains, rules, and expressions. If you just want to
 setup and remove netfilter chains and rules, then `@google/nftables` should
@@ -52,7 +52,7 @@ func main() {
 
 ## Note
 
-'`nufftables` supports versions of Go that are noted by the Go release policy,
+`nufftables` supports versions of Go that are noted by the Go release policy,
 that is, major versions _N_ and _N_-1 (where _N_ is the current major version).
 
 ## VSCode Tasks
