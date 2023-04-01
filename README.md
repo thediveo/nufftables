@@ -3,8 +3,8 @@
 [![PkgGoDev](https://img.shields.io/badge/-reference-blue?logo=go&logoColor=white&labelColor=505050)](https://pkg.go.dev/github.com/thediveo/nufftables)
 [![GitHub](https://img.shields.io/github/license/thediveo/nufftables)](https://img.shields.io/github/license/thediveo/nufftables)
 ![build and test](https://github.com/thediveo/nufftables/workflows/build%20and%20test/badge.svg?branch=master)
-![Coverage](https://img.shields.io/badge/Coverage-95.2%25-brightgreen)
 [![Go Report Card](https://goreportcard.com/badge/github.com/thediveo/nufftables)](https://goreportcard.com/report/github.com/thediveo/nufftables)
+![Coverage](https://img.shields.io/badge/Coverage-88.8%25-brightgreen)
 
 The `nufftables` go module is a thin wrapper around Google's
 [`nftables`](https://github.com/google/nftables) to ease reasoning over the
@@ -94,4 +94,5 @@ The included `nufftables.code-workspace` defines the following tasks:
 
 ## Copyright and License
 
-Copyright 2022 Harald Albrecht, licensed under the Apache License, Version 2.0.
+Copyright 2022-23 Harald Albrecht, licensed under the Apache License, Version
+2.0.

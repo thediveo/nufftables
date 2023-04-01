@@ -88,7 +88,7 @@ var _ = Describe("expression matching a port range", func() {
 			}, // doesn't match
 			&expr.Bitwise{}, // arbitrary
 		}
-		exprs, protocol, minport, maxport = MatchPortRange(origexprs)
+		exprs, _, _, _ = MatchPortRange(origexprs)
 		Expect(exprs).To(BeNil())
 	})
 
