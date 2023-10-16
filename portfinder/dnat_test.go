@@ -24,6 +24,8 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gcustom"
+	"github.com/onsi/gomega/types"
 )
 
 func ip(s string) net.IP {
@@ -35,57 +37,75 @@ func ip(s string) net.IP {
 	return i
 }
 
+func HasOrder(expectedOrder int) types.GomegaMatcher {
+	switch {
+	case expectedOrder < 0:
+		expectedOrder = -1
+	case expectedOrder > 0:
+		expectedOrder = 1
+	}
+	return gcustom.MakeMatcher(func(actual int) (bool, error) {
+		switch {
+		case actual < 0:
+			actual = -1
+		case actual > 0:
+			actual = 1
+		}
+		return actual == expectedOrder, nil
+	})
+}
+
 var _ = Describe("forwarded ports", func() {
 
 	Context("sorting", func() {
 
 		DescribeTable("IPv4 before IPv6",
-			func(a, b string, less bool) {
+			func(a, b string, order int) {
 
-				Expect(ForwardedPortLess(
+				Expect(ForwardedPortOrder(
 					&ForwardedPortRange{IP: ip(a)},
 					&ForwardedPortRange{IP: ip(b)},
-				)).To(Equal(less))
+				)).To(HasOrder(order))
 			},
-			Entry(nil, "10.0.0.0", "fe80::1", true),
-			Entry(nil, "::1", "0.0.0.1", false),
+			Entry(nil, "10.0.0.0", "fe80::1", -1),
+			Entry(nil, "::1", "0.0.0.1", 1),
 		)
 
 		DescribeTable("by original destination address",
-			func(a, b string, less bool) {
+			func(a, b string, order int) {
 
-				Expect(ForwardedPortLess(
+				Expect(ForwardedPortOrder(
 					&ForwardedPortRange{IP: ip(a)},
 					&ForwardedPortRange{IP: ip(b)},
-				)).To(Equal(less))
+				)).To(HasOrder(order))
 			},
-			Entry(nil, "10.0.0.0", "192.168.0.1", true),
-			Entry(nil, "fe80::1", "::", false),
+			Entry(nil, "10.0.0.0", "192.168.0.1", -1),
+			Entry(nil, "fe80::1", "::", 1),
 		)
 
 		DescribeTable("by original port",
-			func(a, b int, less bool) {
+			func(a, b int, order int) {
 
-				Expect(ForwardedPortLess(
+				Expect(ForwardedPortOrder(
 					&ForwardedPortRange{IP: ip("::1"), PortMin: uint16(a)},
 					&ForwardedPortRange{IP: ip("::1"), PortMin: uint16(b)},
-				)).To(Equal(less))
+				)).To(HasOrder(order))
 			},
-			Entry(nil, 42, 66, true),
-			Entry(nil, 420, 66, false),
+			Entry(nil, 42, 66, -1),
+			Entry(nil, 420, 66, 1),
 		)
 
 		DescribeTable("by new destination address",
-			func(a, b string, less bool) {
+			func(a, b string, order int) {
 
-				Expect(ForwardedPortLess(
+				Expect(ForwardedPortOrder(
 					&ForwardedPortRange{IP: ip("::1"), PortMin: 42, ForwardIP: ip(a)},
 					&ForwardedPortRange{IP: ip("::1"), PortMin: 42, ForwardIP: ip(b)},
-				)).To(Equal(less))
+				)).To(HasOrder(order))
 			},
-			Entry(nil, "::1", "fe80::1", true),
-			Entry(nil, "::1", "::1", false),
-			Entry(nil, "fe80::1", "::1", false),
+			Entry(nil, "::1", "fe80::1", -1),
+			Entry(nil, "::1", "::1", 0),
+			Entry(nil, "fe80::1", "::1", 1),
 		)
 
 	})

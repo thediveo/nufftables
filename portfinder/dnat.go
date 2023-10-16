@@ -70,27 +70,30 @@ func ForwardedPort(rule nufftables.Rule) *ForwardedPortRange {
 	}
 }
 
-// ForwardedPortLess returns true if the forwarded port range a comes before b.
+// ForwardedPortOrder returns true if the forwarded port range a comes before b.
 // The sorting order of two forwarded port ranges a and b is defined as follows:
 //   - IPv4 addresses come before IPv6 addresse (or, in other words: IPv4
 //     addresses are less than IPv6 addresses *snicker*).
 //   - by the original (host) IP address,
 //   - by the original beginning of the port range,
 //   - finally by the IP address forwarding to.
-func ForwardedPortLess(a, b *ForwardedPortRange) bool {
+func ForwardedPortOrder(a, b *ForwardedPortRange) int {
 	// sorts IPv4 before IPv6
 	av4 := len(a.IP) == net.IPv4len
 	bv4 := len(b.IP) == net.IPv4len
 	if av4 != bv4 {
-		return av4
+		if av4 {
+			return -1
+		}
+		return 1
 	}
 	// sorts within IP family by original destination address
 	if c := bytes.Compare(a.IP, b.IP); c != 0 {
-		return c < 0
+		return c
 	}
 	// sorts by original min port
 	if c := int(a.PortMin) - int(b.PortMin); c != 0 {
-		return c < 0
+		return c
 	}
-	return bytes.Compare(a.ForwardIP, b.ForwardIP) < 0
+	return bytes.Compare(a.ForwardIP, b.ForwardIP)
 }

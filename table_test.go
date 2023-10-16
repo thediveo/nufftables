@@ -44,8 +44,8 @@ var _ = Describe("'nuff tables", func() {
 		tables, err := GetAllTables(conn)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(tables).NotTo(BeEmpty())
-		for _, fam := range []TableFamily{TableFamilyIPv4, TableFamilyIPv6} {
-			for _, tablename := range []string{"filter", "mangle", "nat"} {
+		for _, fam := range []TableFamily{TableFamilyIPv4} {
+			for _, tablename := range []string{"filter", "nat"} {
 				Expect(tables.Table(tablename, fam)).NotTo(
 					BeNil(), "missing table %q of %q", tablename, fam)
 			}

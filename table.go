@@ -136,6 +136,13 @@ func (t TableMap) addChain(conn *nftables.Conn, chain *nftables.Chain) error {
 // orderRulesByPosition compares two [Rule] objects a and b and returns true if
 // Rule a is in an earlier position than Rule b, where Position is an explicit
 // attribute of rules.
-func orderRulesByPosition(a, b Rule) bool {
-	return a.Position < b.Position
+func orderRulesByPosition(a, b Rule) int {
+	switch d := int64(a.Position) - int64(b.Position); {
+	case d < 0:
+		return -1
+	case d > 0:
+		return 1
+	default:
+		return 0
+	}
 }

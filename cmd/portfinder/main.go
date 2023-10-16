@@ -73,7 +73,7 @@ func dumpForwardedPorts(cmd *cobra.Command, _ []string) error {
 		}
 	}
 
-	slices.SortFunc(fps, portfinder.ForwardedPortLess)
+	slices.SortFunc(fps, portfinder.ForwardedPortOrder)
 
 	for _, fp := range fps {
 		fmt.Printf("%s\n", fp.String())
