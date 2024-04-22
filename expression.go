@@ -32,21 +32,21 @@ func OfType[E expr.Any](exprs Expressions) (Expressions, E) {
 			return exprs[idx+1:], e
 		}
 	}
-	var nill E
-	return nil, nill
+	var zero E
+	return nil, zero
 }
 
 // OfTypeFunc returns the first expression of the specified type and
-// additionally satisfying f(exprs[i]). If no match could be found, then a nil
+// additionally satisfying fn(exprs[i]). If no match could be found, then a nil
 // expressions list is returned together with a zero matching expression (~nil).
-func OfTypeFunc[E expr.Any](exprs Expressions, f func(e E) bool) (Expressions, E) {
+func OfTypeFunc[E expr.Any](exprs Expressions, fn func(e E) bool) (Expressions, E) {
 	for idx, elem := range exprs {
-		if e, ok := elem.(E); ok && f(e) {
+		if e, ok := elem.(E); ok && fn(e) {
 			return exprs[idx+1:], e
 		}
 	}
-	var nill E
-	return nil, nill
+	var zero E
+	return nil, zero
 }
 
 // OptionalOfType returns the first expression of the specified type if found,
@@ -61,13 +61,37 @@ func OptionalOfType[E expr.Any](exprs Expressions) (Expressions, E) {
 }
 
 // OptionalOfTypeFunc returns the first expression of the specified type and
-// satisfying f(exprs[i]), otherwise a zero matching expression (~nil). If a
+// satisfying fn(exprs[i]), otherwise a zero matching expression (~nil). If a
 // match was found, then the remaining expressions are returned, otherwise the
 // original expressions.
-func OptionalOfTypeFunc[E expr.Any](exprs Expressions, f func(e E) bool) (Expressions, E) {
-	remexprs, e := OfTypeFunc(exprs, f)
+func OptionalOfTypeFunc[E expr.Any](exprs Expressions, fn func(e E) bool) (Expressions, E) {
+	remexprs, e := OfTypeFunc(exprs, fn)
 	if remexprs == nil {
 		return exprs, e
 	}
 	return remexprs, e
+}
+
+// OfTypeTransformed returns the transformed result from the first expression
+// found of the specified type and also satisfying fn(exprs[i]), otherwise a
+// zero matching result (~nil). If no match could be found, then a nil
+// expressions list is returned together with a zero matching expression.
+//
+// The passed fn should return the transformed expression and true upon
+// accepting a match; otherwise, it should return false, so that
+// OfTypeTransformed tries to find the next potential match.
+func OfTypeTransformed[E expr.Any, R any](exprs Expressions, fn func(e E) (R, bool)) (Expressions, R) {
+	for idx, elem := range exprs {
+		e, ok := elem.(E)
+		if !ok {
+			continue
+		}
+		r, ok := fn(e)
+		if !ok {
+			continue
+		}
+		return exprs[idx+1:], r
+	}
+	var zero R
+	return nil, zero
 }

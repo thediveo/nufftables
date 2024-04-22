@@ -120,4 +120,57 @@ var _ = Describe("expression matching", func() {
 
 	})
 
+	Context("type match with func constraint and transformation", func() {
+
+		It("matches a specific expression type and constraint, and then return its transformation, together with the remaining expressions", func() {
+			origexprs := Expressions{
+				&expr.Bitwise{},
+				&expr.Cmp{
+					Op: expr.CmpOpGt,
+				},
+				&expr.Counter{},
+			}
+			f := func(cmp *expr.Cmp) (expr.CmpOp, bool) {
+				return cmp.Op, true
+			}
+			exprs, op := OfTypeTransformed(origexprs, f)
+			Expect(exprs).NotTo(BeNil())
+			Expect(op).To(Equal(expr.CmpOpGt))
+		})
+
+		It("matches a specific expression type and constraint, and then return its transformation, together with the remaining expressions", func() {
+			origexprs := Expressions{
+				&expr.Bitwise{},
+				&expr.Cmp{},
+				&expr.Cmp{
+					Op: expr.CmpOpGt,
+				},
+				&expr.Counter{},
+			}
+			f := func(cmp *expr.Cmp) (expr.CmpOp, bool) {
+				if cmp.Op == 0 {
+					return 0, false
+				}
+				return cmp.Op, true
+			}
+			exprs, op := OfTypeTransformed(origexprs, f)
+			Expect(exprs).NotTo(BeNil())
+			Expect(op).To(Equal(expr.CmpOpGt))
+			Expect(exprs[0]).To(BeIdenticalTo(origexprs[3]))
+		})
+
+		It("returns nil when no match", func() {
+			origexprs := Expressions{
+				&expr.Bitwise{},
+			}
+			f := func(cmp *expr.Cmp) (expr.CmpOp, bool) {
+				return cmp.Op, true
+			}
+			exprs, op := OfTypeTransformed(origexprs, f)
+			Expect(exprs).To(BeNil())
+			Expect(op).To(BeZero())
+		})
+
+	})
+
 })

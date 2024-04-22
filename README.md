@@ -4,7 +4,7 @@
 [![GitHub](https://img.shields.io/github/license/thediveo/nufftables)](https://img.shields.io/github/license/thediveo/nufftables)
 ![build and test](https://github.com/thediveo/nufftables/workflows/build%20and%20test/badge.svg?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/thediveo/nufftables)](https://goreportcard.com/report/github.com/thediveo/nufftables)
-![Coverage](https://img.shields.io/badge/Coverage-88.8%25-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-90.0%25-brightgreen)
 
 The `nufftables` go module is a thin wrapper around Google's
 [`nftables`](https://github.com/google/nftables) to ease reasoning over the
@@ -61,7 +61,7 @@ The included `nufftables.code-workspace` defines the following tasks:
 
 - **View Go module documentation** task: installs `pkgsite`, if not done already
   so, then starts `pkgsite` and opens VSCode's integrated ("simple") browser to
-  show the go-plugger/v2 documentation.
+  show the nufftable's documentation.
 
 #### Aux Tasks
 
@@ -94,5 +94,5 @@ The included `nufftables.code-workspace` defines the following tasks:
 
 ## Copyright and License
 
-Copyright 2022-23 Harald Albrecht, licensed under the Apache License, Version
+Copyright 2022-24 Harald Albrecht, licensed under the Apache License, Version
 2.0.
