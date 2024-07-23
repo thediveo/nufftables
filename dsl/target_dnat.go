@@ -21,24 +21,19 @@ import (
 )
 
 // TargetDNAT returns the [xt.NatRange2] information from the first matching
-// Target DNAT expression, together with the remaining expressions after the
-// Target DNAT expression. If no match is found, then nil is returned for the
-// remaining expressions.
+// Target DNAT expression containing NatRange2 information, together with the
+// remaining expressions after the Target DNAT expression. If no match is found,
+// then nil is returned for the remaining expressions.
 func TargetDNAT(exprs nufftables.Expressions) (nufftables.Expressions, *xt.NatRange2) {
-	remexprs, target := nufftables.OfTypeFunc(exprs, isTargetDNATExpression)
-	if remexprs == nil {
-		return nil, nil
-	}
-	natrange2, ok := target.Info.(*xt.NatRange2)
-	if !ok {
-		// maybe there's another one after this one...?
-		return TargetDNAT(remexprs)
-	}
-	return remexprs, natrange2
+	return nufftables.OfTypeTransformed(exprs, targetDNATRange2)
 }
 
-// isTargetDNATExpression returns true if the given Target expression is a DNAT
-// target expression, otherwise false.
-func isTargetDNATExpression(target *expr.Target) bool {
-	return target.Name == "DNAT"
+// targetDNATRange2 returns the NatRange2 information and true if the given
+// Target expression is a DNAT target expression with NatRange2 information.
+func targetDNATRange2(target *expr.Target) (*xt.NatRange2, bool) {
+	if target.Name != "DNAT" {
+		return nil, false
+	}
+	natrange2, ok := target.Info.(*xt.NatRange2)
+	return natrange2, ok
 }
