@@ -4,7 +4,7 @@
 [![GitHub](https://img.shields.io/github/license/thediveo/nufftables)](https://img.shields.io/github/license/thediveo/nufftables)
 ![build and test](https://github.com/thediveo/nufftables/workflows/build%20and%20test/badge.svg?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/thediveo/nufftables)](https://goreportcard.com/report/github.com/thediveo/nufftables)
-![Coverage](https://img.shields.io/badge/Coverage-90.0%25-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-91.1%25-brightgreen)
 
 The `nufftables` go module is a thin wrapper around Google's
 [`nftables`](https://github.com/google/nftables) to ease reasoning over the
