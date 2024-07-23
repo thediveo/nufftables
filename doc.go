@@ -23,11 +23,29 @@ explicitly.
 To simplify “fishing” for expressions in rules, nufftables defines a set of
 convenience functions:
 
-  - [OfType] and [OfTypeFunc] for finding and returning the next expression of a
-    specific type.
-  - [OptionalOfType] and [OptionalOfTypeFunc] work like OfType and OfTypeFunc
-    but don't consider failures to find matching expression types to be a
-    failure.
+  - [OfType] finds and returns the expression of the exact type, such as
+    [*expr.Payload] or [*expr.Cmp], as well as the remaining expressions after
+    the match.
+
+  - [OfTypeFunc] finds and returns the expression of the exact type, additionally
+    satisfying the constraints of the passed “approver” function.
+
+  - [OfTypeTransformed] finds the expression of the exact type, and if accepted
+    by the constraint-and-transformer function specified, returns the transformed
+    value.
+
+  - [PrefixedOfTypeFunc] find a matching twin expressions and then returns the
+    transformation of the trailing twin. A typical use case might be matching on
+    the sequence of an [*expr.Payload] network header load, immediately followed
+    by an [*expr.Cmp] destination IP address compare, transforming the trailing
+    match to return just the concrete IP address checked for.
+
+  - Often times, certain expressions can be optional: [OptionalOfType],
+    [OptionalOfTypeFunc], [OptionalPrefixedOfTypeFunc], [OptionalOfTypeTransformed]
+    and [OptionalPrefixedOfTypeTransformed] return the original expressions instead
+    of nil in case no match exists. This way, the optional expression matches
+    can be neatly chained into the overall expression parsing and matching, without
+    breaking the flow.
 
 For instance,
 

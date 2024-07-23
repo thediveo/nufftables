@@ -18,68 +18,97 @@ import (
 	"github.com/google/nftables/expr"
 )
 
-// Expressions represents a slice of a rule's [expr.Any] expressions.
+// Expressions represents a slice of expr.Any expressions for a single Rule.
 type Expressions []expr.Any
 
-// OfType returns the first expression of the specified type, together with the
-// remaining expressions after the matching expression. The type parameter must
-// be a pointer to a concrete expression type, such as [*expr.Match], et cetera.
-// If no match could be found, then a nil expressions list is returned together
-// with a zero matching expression (~nil).
+// asIs returns its passed expression ”as-is”, acting as the neutral one-to-one
+// “transformation” function that returns its passed expression together with
+// “ok”/true.
+func asIs[E expr.Any](e E) (E, bool) { return e, true }
+
+// satisfying returns a transformation function that in turn returns its passed
+// value “e” together with “ok”/true) only if the specified function “fn”
+// returns true for the given value “e”. It basically acts as a conditional
+// (gated) “neutral” transformation.
+func satisfying[E expr.Any](fn func(e E) bool) func(e E) (E, bool) {
+	return func(e E) (E, bool) {
+		ok := fn(e)
+		if !ok {
+			var zero E
+			return zero, false
+		}
+		return e, true
+	}
+}
+
+// OfType returns the first expression (if any) of the specified type E,
+// together with the remaining expressions after the match. The type parameter E
+// must be a pointer to a concrete nftables expression type, such as
+// [*expr.Match], et cetera. If no expression with a matching type could be
+// found, then a nil expressions list is returned, together with a zero matching
+// expression (~nil).
 func OfType[E expr.Any](exprs Expressions) (Expressions, E) {
-	for idx, elem := range exprs {
-		if e, ok := elem.(E); ok {
-			return exprs[idx+1:], e
-		}
-	}
-	var zero E
-	return nil, zero
+	return OfTypeTransformed(exprs, asIs[E])
 }
 
-// OfTypeFunc returns the first expression of the specified type and
-// additionally satisfying fn(exprs[i]). If no match could be found, then a nil
-// expressions list is returned together with a zero matching expression (~nil).
-func OfTypeFunc[E expr.Any](exprs Expressions, fn func(e E) bool) (Expressions, E) {
-	for idx, elem := range exprs {
-		if e, ok := elem.(E); ok && fn(e) {
-			return exprs[idx+1:], e
-		}
-	}
-	var zero E
-	return nil, zero
-}
-
-// OptionalOfType returns the first expression of the specified type if found,
-// otherwise a zero matching expression (~nil). If a match was found, then the
-// remaining expressions are returned, otherwise the original expressions.
-func OptionalOfType[E expr.Any](exprs Expressions) (Expressions, E) {
-	remexprs, e := OfType[E](exprs)
-	if remexprs == nil {
-		return exprs, e
-	}
-	return remexprs, e
-}
-
-// OptionalOfTypeFunc returns the first expression of the specified type and
-// satisfying fn(exprs[i]), otherwise a zero matching expression (~nil). If a
-// match was found, then the remaining expressions are returned, otherwise the
+// OptionalOfType returns the first expression (if any) of the specified type E,
+// together with the remaining expressions after the match; otherwise, it
+// returns a zero matching expression of type E (~nil), together with the
 // original expressions.
-func OptionalOfTypeFunc[E expr.Any](exprs Expressions, fn func(e E) bool) (Expressions, E) {
-	remexprs, e := OfTypeFunc(exprs, fn)
-	if remexprs == nil {
-		return exprs, e
-	}
-	return remexprs, e
+//
+// This form allows chaining in optional expressions without further separate
+// found/not-found case handling, giving a somewhat “fluent” expression hunting
+// experience.
+func OptionalOfType[E expr.Any](exprs Expressions) (Expressions, E) {
+	return OptionalOfTypeTransformed(exprs, asIs[E])
 }
 
-// OfTypeTransformed returns the transformed result from the first expression
-// found of the specified type and also satisfying fn(exprs[i]), otherwise a
-// zero matching result (~nil). If no match could be found, then a nil
-// expressions list is returned together with a zero matching expression.
+// OfTypeFunc returns the first expression (if any) of the specified type E and
+// additionally satisfying fn(E). If no expression with a matching type and
+// satisfied fn(E) could be found, then a nil expressions list is returned,
+// together with a zero matching expression of type E (~nil).
+func OfTypeFunc[E expr.Any](exprs Expressions, fn func(e E) bool) (Expressions, E) {
+	return OfTypeTransformed(exprs, satisfying(fn))
+}
+
+// OptionalOfTypeFunc returns the first expression (if any) of the specified
+// type E and additionally satisfying fn(E), together with the remaining
+// expressions after the match; otherwise, it returns a zero matching expression
+// of type E (~nil) together with the original expressions.
 //
-// The passed fn should return the transformed expression and true upon
-// accepting a match; otherwise, it should return false, so that
-// OfTypeTransformed tries to find the next potential match.
+// This form allows chaining in optional expressions without further separate
+// found/not-found case handling, giving a somewhat “fluent” expression hunting
+// experience.
+func OptionalOfTypeFunc[E expr.Any](exprs Expressions, fn func(e E) bool) (Expressions, E) {
+	return OptionalOfTypeTransformed(exprs, satisfying(fn))
+}
+
+// PrefixedOfTypeFunc returns the first expression (if any) of the specified
+// type E also satisfying fn(E) that additionally has a prefix expression of
+// type P satisfying prefn(P). If no such twin-match could be found, then a nil
+// expressions list is returned together with a zero expression of type E
+// (~nil).
+func PrefixedOfTypeFunc[P, E expr.Any](exprs Expressions, prefn func(p P) bool, fn func(e E) bool) (Expressions, E) {
+	return PrefixedOfTypeTransformed(exprs, prefn, satisfying(fn))
+}
+
+// OptionalPrefixedOfTypeFunc returns the first expression (if any) of the
+// specified type E also satisfying fn(E) that additionally has a prefix
+// expression of type P satisfying prefn(P). If no such twin-match could be
+// found, then the original expressions together with a zero expression of type
+// E is returned instead.
+func OptionalPrefixedOfTypeFunc[P, E expr.Any](exprs Expressions, prefn func(p P) bool, fn func(e E) bool) (Expressions, E) {
+	return OptionalPrefixedOfTypeTransformed(exprs, prefn, satisfying(fn))
+}
+
+// OfTypeTransformed returns the transformed result of type R of the first
+// expression matching the specified type E and additionally satisfying the
+// transformator fn(E); otherwise, it returns a zero result expression of type
+// R, as well as a nil expressions list.
+//
+// The passed fn should return the transformed expression of type R as well as
+// true upon accepting a match; otherwise, it should return false, so that
+// OfTypeTransformed tries to find the next potential match of type E.
 func OfTypeTransformed[E expr.Any, R any](exprs Expressions, fn func(e E) (R, bool)) (Expressions, R) {
 	for idx, elem := range exprs {
 		e, ok := elem.(E)
@@ -94,4 +123,65 @@ func OfTypeTransformed[E expr.Any, R any](exprs Expressions, fn func(e E) (R, bo
 	}
 	var zero R
 	return nil, zero
+}
+
+// OptionalOfTypeTransformed returns the transformed result of type R of the
+// first expression matching the specified type E and additionally satisfying
+// the transformator fn(E); otherwise, it returns a zero result expression of
+// type R, as well as the original expressions list.
+//
+// The passed fn should return the transformed expression of type R as well as
+// true upon accepting a match; otherwise, it should return false, so that
+// OfTypeTransformed tries to find the next potential match of type E.
+func OptionalOfTypeTransformed[E expr.Any, R any](exprs Expressions, fn func(e E) (R, bool)) (Expressions, R) {
+	remexprs, r := OfTypeTransformed(exprs, fn)
+	if remexprs == nil {
+		return exprs, r
+	}
+	return remexprs, r
+}
+
+// PrefixedOfTypeTransformed returns the transformed result of type R of the
+// first expression matching the specified type E also satisfying fn(E) that
+// additionally has a prefix expression of type P satisfying prefn(P). If no
+// such twin-match could be found, then a nil expressions list is returned
+// together with a zero expression of type E (~nil).
+func PrefixedOfTypeTransformed[P, E expr.Any, R any](exprs Expressions, prefn func(p P) bool, fn func(e E) (R, bool)) (Expressions, R) {
+	for idx, elem := range exprs {
+		p, ok := elem.(P)
+		if !ok || !prefn(p) {
+			continue
+		}
+		if idx >= len(exprs)-1 {
+			continue
+		}
+		e, ok := exprs[idx+1].(E)
+		if !ok {
+			continue
+		}
+		r, ok := fn(e)
+		if !ok {
+			continue
+		}
+		return exprs[idx+2:], r
+	}
+	var zero R
+	return nil, zero
+}
+
+// OptionalPrefixedOfTypeTransformed returns the transformed result of type R of
+// the first expression matching the specified type E also satisfying fn(E) that
+// additionally has a prefix expression of type P satisfying prefn(P);
+// otherwise, it returns a zero result expression of type R, as well as the
+// original expressions list.
+//
+// The passed fn should return the transformed expression of type R as well as
+// true upon accepting a match; otherwise, it should return false, so that
+// OfTypeTransformed tries to find the next potential match of type E.
+func OptionalPrefixedOfTypeTransformed[P, E expr.Any, R any](exprs Expressions, precfn func(p P) bool, fn func(e E) (R, bool)) (Expressions, R) {
+	remexprs, r := PrefixedOfTypeTransformed(exprs, precfn, fn)
+	if remexprs == nil {
+		return exprs, r
+	}
+	return remexprs, r
 }
