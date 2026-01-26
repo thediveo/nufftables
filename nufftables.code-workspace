@@ -4,5 +4,8 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"go.lintOnSave": "workspace",
+		"go.lintTool": "golangci-lint-v2"
+	}
 }

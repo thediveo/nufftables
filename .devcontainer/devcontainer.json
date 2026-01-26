@@ -1,0 +1,55 @@
+{
+    "name": "nufftables",
+    "portsAttributes": {
+        "6060": {
+            "label": "nufftables package documentation",
+            "onAutoForward": "notify",
+            "protocol": "http"
+        }
+    },
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+    "features": {
+        // we just need the "nft" CLI to setup some nftables stuff to discover
+        // in this otherwise rather empty container; additionally, the nft CLI
+        // might also come in handy otherwise.
+        "./nftables-cli": {},
+        "ghcr.io/thediveo/devcontainer-features/local-pkgsite:0": {},
+        "ghcr.io/thediveo/devcontainer-features/lazygit:0": {},
+        "ghcr.io/thediveo/devcontainer-features/goreportcard:0": {},
+        "ghcr.io/thediveo/devcontainer-features/go-mod-upgrade:0": {},
+        "ghcr.io/thediveo/devcontainer-features/gocover:0": {
+            "root": true,
+            "num-programs": "1",
+            "race": true,
+            "verbose": true,
+            "html": true
+        },
+        "ghcr.io/thediveo/devcontainer-features/pin-github-action:0": {}
+    },
+    "remoteEnv": {
+        "GOPATH": "/home/vscode/go",
+        "PATH": "/home/vscode/go/bin:/go/bin:/usr/local/go/bin:${localEnv:PATH}"
+    },
+    "capAdd": [
+        "NET_ADMIN"
+    ],
+    "securityOpt": [
+        "apparmor:unconfined",
+        "seccomp:unconfined"
+    ],
+    "postCreateCommand": {
+        // prepare some empty tables and empty chains so that our simplified
+        // tests have something to read after all. 
+        "nft": "sudo bash -c 'nft add table ip4 && nft add table nat && sudo nft add table filter && nft add chain nat POSTROUTING'"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "stkb.rewrap",
+                "brunnerh.insert-unicode",
+                "mhutchie.git-graph",
+                "ms-vscode.makefile-tools"
+            ]
+        }
+    }
+}
