@@ -2,7 +2,7 @@
 
 [![PkgGoDev](https://img.shields.io/badge/-reference-blue?logo=go&logoColor=white&labelColor=505050)](https://pkg.go.dev/github.com/thediveo/nufftables)
 [![GitHub](https://img.shields.io/github/license/thediveo/nufftables)](https://img.shields.io/github/license/thediveo/nufftables)
-![build and test](https://github.com/thediveo/nufftables/workflows/build%20and%20test/badge.svg?branch=master)
+![build and test](https://github.com/thediveo/nufftables/actions/workflows/buildandtest.yaml/badge.svg?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/thediveo/nufftables)](https://goreportcard.com/report/github.com/thediveo/nufftables)
 ![Coverage](https://img.shields.io/badge/Coverage-92.9%25-brightgreen)
 
@@ -50,49 +50,29 @@ func main() {
 }
 ```
 
-## Note
+## DevContainer
 
-`nufftables` supports versions of Go that are noted by the Go release policy,
-that is, major versions _N_ and _N_-1 (where _N_ is the current major version).
+> [!CAUTION]
+>
+> Do **not** use VSCode's "~~Dev Containers: Clone Repository in Container
+> Volume~~" command, as it is utterly broken by design, ignoring
+> `.devcontainer/devcontainer.json`.
 
-## VSCode Tasks
+1. `git clone https://github.com/thediveo/netdb`
+2. in VSCode: Ctrl+Shift+P, "Dev Containers: Open Workspace in Container..."
+3. select `netdb.code-workspace` and off you go...
 
-The included `nufftables.code-workspace` defines the following tasks:
+## Supported Go Versions
 
-- **View Go module documentation** task: installs `pkgsite`, if not done already
-  so, then starts `pkgsite` and opens VSCode's integrated ("simple") browser to
-  show the nufftable's documentation.
+`nufftables` supports versions of Go that are noted by the [Go release
+policy](https://golang.org/doc/devel/release.html#policy), that is, major
+versions _N_ and _N_-1 (where _N_ is the current major version).
 
-#### Aux Tasks
+## Contributing
 
-- _pksite service_: auxilliary task to run `pkgsite` as a background service
-  using `scripts/pkgsite.sh`. The script leverages browser-sync and nodemon to
-  hot reload the Go module documentation on changes; many thanks to @mdaverde's
-  [_Build your Golang package docs
-  locally_](https://mdaverde.com/posts/golang-local-docs) for paving the way.
-  `scripts/pkgsite.sh` adds automatic installation of `pkgsite`, as well as the
-  `browser-sync` and `nodemon` npm packages for the local user.
-- _view pkgsite_: auxilliary task to open the VSCode-integrated "simple" browser
-  and pass it the local URL to open in order to show the module documentation
-  rendered by `pkgsite`. This requires a detour via a task input with ID
-  "_pkgsite_".
-
-## Make Targets
-
-- `make`: lists all targets.
-- `make coverage`: runs all tests with coverage and then **updates the coverage
-  badge in `README.md`**.
-- `make pkgsite`: installs [`x/pkgsite`](golang.org/x/pkgsite/cmd/pkgsite), as
-  well as the [`browser-sync`](https://www.npmjs.com/package/browser-sync) and
-  [`nodemon`](https://www.npmjs.com/package/nodemon) npm packages first, if not
-  already done so. Then runs the `pkgsite` and hot reloads it whenever the
-  documentation changes.
-- `make report`: installs
-  [`@gojp/goreportcard`](https://github.com/gojp/goreportcard) if not yet done
-  so and then runs it on the code base.
-- `make test`: runs **all** tests, once as root and then as the invoking user.
+Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Copyright and License
 
-Copyright 2022-24 Harald Albrecht, licensed under the Apache License, Version
+Copyright 2022-26 Harald Albrecht, licensed under the Apache License, Version
 2.0.

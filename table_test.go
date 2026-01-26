@@ -36,7 +36,7 @@ var _ = Describe("'nuff tables", func() {
 		conn, err = nftables.New(nftables.AsLasting())
 		Expect(err).NotTo(HaveOccurred())
 		DeferCleanup(func() {
-			conn.CloseLasting()
+			Expect(conn.CloseLasting()).To(Succeed())
 		})
 	})
 

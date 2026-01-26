@@ -1,0 +1,6 @@
+{
+    "name": "nftables CLI",
+    "id": "nftables-cli",
+    "version": "0.0.1",
+    "description": "Installs nftables CLI from distro packages."
+}
