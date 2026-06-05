@@ -16,6 +16,7 @@ package dsl
 
 import (
 	"github.com/google/nftables/expr"
+
 	"github.com/thediveo/nufftables"
 
 	. "github.com/onsi/ginkgo/v2"

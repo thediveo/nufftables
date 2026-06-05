@@ -18,6 +18,7 @@ import (
 	"net"
 
 	"github.com/google/nftables/expr"
+
 	"github.com/thediveo/nufftables"
 )
 

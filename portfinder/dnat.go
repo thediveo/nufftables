@@ -19,6 +19,7 @@ import (
 	"net"
 
 	"github.com/google/nftables/xt"
+
 	"github.com/thediveo/nufftables"
 	"github.com/thediveo/nufftables/dsl"
 )
