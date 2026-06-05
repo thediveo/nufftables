@@ -17,6 +17,7 @@ package dsl
 import (
 	"github.com/google/nftables/expr"
 	"github.com/google/nftables/xt"
+
 	"github.com/thediveo/nufftables"
 )
 

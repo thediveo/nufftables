@@ -23,13 +23,14 @@ package main
 import (
 	"fmt"
 	"os"
+	"slices"
 
 	"github.com/google/nftables"
 	"github.com/spf13/cobra"
 	"github.com/thediveo/enumflag/v2"
+
 	"github.com/thediveo/nufftables"
 	"github.com/thediveo/nufftables/portfinder"
-	"golang.org/x/exp/slices"
 )
 
 // TableFamilies maps netfilter table families (or more precise: the IP protocol

@@ -20,12 +20,14 @@ import (
 	"github.com/google/nftables"
 	"github.com/google/nftables/expr"
 	"github.com/google/nftables/xt"
+
 	"github.com/thediveo/nufftables"
+
+	"github.com/onsi/gomega/gcustom"
+	"github.com/onsi/gomega/types"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/onsi/gomega/gcustom"
-	"github.com/onsi/gomega/types"
 )
 
 func ip(s string) net.IP {

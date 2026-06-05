@@ -15,10 +15,10 @@
 package nufftables
 
 import (
+	"maps"
 	"os"
 
 	"github.com/google/nftables"
-	"golang.org/x/exp/maps"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

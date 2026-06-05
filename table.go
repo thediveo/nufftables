@@ -15,8 +15,9 @@
 package nufftables
 
 import (
+	"slices"
+
 	"github.com/google/nftables"
-	"golang.org/x/exp/slices"
 )
 
 // Table is a [nftables.Table] together with all its named [Chain] objects.

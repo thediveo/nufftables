@@ -1,30 +1,34 @@
 {
     "name": "nufftables",
     "portsAttributes": {
-        "6060": {
+        "16079": {
             "label": "nufftables package documentation",
             "onAutoForward": "notify",
             "protocol": "http"
         }
     },
-    "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
     "features": {
-        // we just need the "nft" CLI to setup some nftables stuff to discover
-        // in this otherwise rather empty container; additionally, the nft CLI
-        // might also come in handy otherwise.
-        "./nftables-cli": {},
-        "ghcr.io/thediveo/devcontainer-features/local-pkgsite:0": {},
+        "ghcr.io/devcontainers/features/node:2": {},
+        "ghcr.io/devcontainers/features/go:1": {},
+        "ghcr.io/thediveo/devcontainer-features/goreportcard:1": {},
+        "ghcr.io/thediveo/devcontainer-features/go-mod-upgrade:1": {},
         "ghcr.io/thediveo/devcontainer-features/lazygit:0": {},
-        "ghcr.io/thediveo/devcontainer-features/goreportcard:0": {},
-        "ghcr.io/thediveo/devcontainer-features/go-mod-upgrade:0": {},
-        "ghcr.io/thediveo/devcontainer-features/gocover:0": {
+        "ghcr.io/thediveo/devcontainer-features/pinact:0": {},
+        "ghcr.io/thediveo/devcontainer-features/gocover:1": {
             "root": true,
             "num-programs": "1",
             "race": true,
             "verbose": true,
             "html": true
         },
-        "ghcr.io/thediveo/devcontainer-features/pin-github-action:0": {}
+        "ghcr.io/thediveo/devcontainer-features/local-pkgsite:1": {
+            "port": "16079"
+        },
+        // we just need the "nft" CLI to setup some nftables stuff to discover
+        // in this otherwise rather empty container; additionally, the nft CLI
+        // might also come in handy otherwise.
+        "./nftables-cli": {}
     },
     "remoteEnv": {
         "GOPATH": "/home/vscode/go",
@@ -45,7 +49,7 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "stkb.rewrap",
+                "dnut.rewrap-revived",
                 "brunnerh.insert-unicode",
                 "mhutchie.git-graph",
                 "ms-vscode.makefile-tools"

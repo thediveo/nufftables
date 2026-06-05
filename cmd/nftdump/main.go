@@ -21,16 +21,17 @@ package main
 
 import (
 	"fmt"
+	"maps"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/google/nftables"
 	"github.com/spf13/cobra"
 	"github.com/thediveo/enumflag/v2"
+
 	"github.com/thediveo/nufftables"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 )
 
 var (

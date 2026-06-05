@@ -16,6 +16,7 @@ package nufftables
 
 import (
 	"github.com/google/nftables/expr"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -346,7 +347,7 @@ var _ = Describe("expression matching", func() {
 				func(p *expr.Payload) bool { return p.Base == expr.PayloadBaseTransportHeader },
 				func(c *expr.Cmp) bool { return c.Op == expr.CmpOpEq })
 			Expect(exprs).NotTo(BeNil())
-			Expect(exprs).To(HaveLen(0))
+			Expect(exprs).To(BeEmpty())
 			Expect(e).To(BeIdenticalTo(origexprs[3]))
 		})
 
